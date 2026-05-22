@@ -1,6 +1,10 @@
 "use client";
 
+import { useState } from "react";
+
 import { useRaffleStore } from "../store/raffleStore";
+
+import styles from "../styles/index.module.scss";
 
 export default function RaffleConfig() {
   const maxNumbers = useRaffleStore(
@@ -11,23 +15,39 @@ export default function RaffleConfig() {
     (s) => s.setMaxNumbers
   );
 
-  return (
-    <div className="space-y-2">
-      <label className="font-bold">
-        Cantidad de números
-      </label>
+  const [open, setOpen] = useState(false);
 
-      <select
-        value={maxNumbers}
-        onChange={(e) =>
-          setMaxNumbers(Number(e.target.value))
-        }
-        className="border p-2 rounded"
+  const options = [100, 200, 600];
+
+  const handleSelect = (value: number) => {
+    setMaxNumbers(value);
+
+    setOpen(false);
+  };
+
+  return (
+    <div className={styles.configWrapper}>
+      <button
+        className={styles.configButton}
+        onClick={() => setOpen(!open)}
       >
-        <option value={100}>100</option>
-        <option value={200}>200</option>
-        <option value={500}>500</option>
-      </select>
+        ⚙ {maxNumbers}
+      </button>
+
+      {open && (
+        <div className={styles.configMenu}>
+          {options.map((option) => (
+            <button
+              key={option}
+              onClick={() =>
+                handleSelect(option)
+              }
+            >
+              {option}
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

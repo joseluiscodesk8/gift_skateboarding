@@ -1,38 +1,44 @@
 "use client";
 
 import { useRaffleStore } from "../store/raffleStore";
-import styles from "../styles/index.module.scss"
+
+import styles from "../styles/index.module.scss";
 
 export default function WinnerModal() {
   const winner = useRaffleStore(
     (s) => s.winner
   );
 
+  const setWinner = useRaffleStore(
+    (s) => s.setWinner
+  );
+
   if (!winner) return null;
 
   return (
-    <div className={styles.winnerOverlay}>
-      <div className={styles.winnerModal}>
-        <h2 className="text-2xl font-bold">
-          🎉 Ganador
-        </h2>
+    <div
+      className={styles.winnerOverlay}
+      onClick={() => setWinner(null)}
+    >
+      <div
+        className={styles.winnerModal}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <button
+          className={styles.closeButton}
+          onClick={() => setWinner(null)}
+        >
+          ✕
+        </button>
 
-        {winner.photo && (
-<div className={styles.winnerAvatar}>
-  <img
-    src={winner.photo}
-    alt={winner.participantName}
-    className="w-full h-full object-cover"
-  />
-</div>
-)}
+        <h2>🎉 Ganador</h2>
 
-        <p className="mt-4">
-          {winner.participantName}
-        </p>
+        <h3>{winner.participantName}</h3>
 
         <p>
-          Número: {winner.winningNumber}
+          Número ganador:
+          {" "}
+          #{winner.winningNumber}
         </p>
       </div>
     </div>

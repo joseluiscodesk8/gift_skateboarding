@@ -1,5 +1,7 @@
 "use client";
 
+import { useState } from "react";
+
 import RaffleConfig from "../components/RaffleConfig";
 import ParticipantForm from "../components/ParticipantForm";
 import ParticipantList from "../components/ParticipantList";
@@ -7,7 +9,12 @@ import WinnerModal from "../components/WinnerModal";
 
 import { useRaffleStore } from "../store/raffleStore";
 
+import styles from "../styles/index.module.scss";
+
 export default function HomeClient() {
+  const [showForm, setShowForm] =
+    useState(false);
+
   const drawWinner = useRaffleStore(
     (s) => s.drawWinner
   );
@@ -17,30 +24,37 @@ export default function HomeClient() {
   );
 
   return (
-    <main className="max-w-2xl mx-auto p-6 space-y-6">
-      <h1 className="text-4xl font-bold">
+    <main className={styles.home}>
+      <h1 className={styles.title}>
         Gift Skate Or Die
       </h1>
 
       <RaffleConfig />
 
-      <ParticipantForm />
+      <button
+        className={styles.addButton}
+        onClick={() =>
+          setShowForm(!showForm)
+        }
+      >
+        +
+      </button>
 
-      <div className="flex gap-3">
-        <button
-          onClick={drawWinner}
-          className="bg-green-600 text-white px-4 py-2 rounded"
-        >
+      <div className={styles.actions}>
+        <button onClick={drawWinner}>
           Sortear
         </button>
 
-        <button
-          onClick={resetRaffle}
-          className="bg-red-600 text-white px-4 py-2 rounded"
-        >
+        <button onClick={resetRaffle}>
           Reiniciar
         </button>
       </div>
+
+      {showForm && (
+  <ParticipantForm
+    onSaved={() => setShowForm(false)}
+  />
+)}
 
       <ParticipantList />
 

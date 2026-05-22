@@ -1,0 +1,77 @@
+.home {
+  max-width: 500px;
+
+  margin: 0 auto;
+
+  padding: 40px 20px 120px;
+}
+
+.title {
+  text-align: center;
+
+  margin-bottom: 24px;
+
+  font-size: 42px;
+
+  font-weight: 700;
+
+  letter-spacing: -1px;
+
+  color: #1d1d1f;
+}
+
+.addButton {
+  width: 64px;
+  height: 64px;
+
+  border: none;
+
+  border-radius: 999px;
+
+  background: #ffffff;
+
+  color: #1d1d1f;
+
+  font-size: 38px;
+
+  box-shadow:
+    0 4px 20px rgba(0,0,0,0.08),
+    inset 0 1px 1px rgba(255,255,255,0.8);
+
+  cursor: pointer;
+
+  display: block;
+
+  margin: 20px auto;
+}
+
+.actions {
+  display: flex;
+
+  gap: 12px;
+
+  margin-bottom: 24px;
+
+  button {
+    flex: 1;
+
+    padding: 14px;
+
+    border: none;
+
+    border-radius: 16px;
+
+    background: rgba(255,255,255,0.7);
+
+    backdrop-filter: blur(20px);
+
+    color: #1d1d1f;
+
+    font-weight: 600;
+
+    box-shadow:
+      0 4px 20px rgba(0,0,0,0.06);
+
+    cursor: pointer;
+  }
+}

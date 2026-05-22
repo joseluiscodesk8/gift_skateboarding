@@ -3,37 +3,73 @@
 
   inset: 0;
 
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0,0,0,0.2);
+
+  backdrop-filter: blur(20px);
 
   display: flex;
+
   align-items: center;
   justify-content: center;
+
+  padding: 20px;
 }
 
 .winnerModal {
-  background: white;
+  position: relative;
+
+  width: 100%;
+
+  max-width: 340px;
+
+  background: rgba(255,255,255,0.85);
+
+  backdrop-filter: blur(30px);
+
+  border-radius: 32px;
 
   padding: 32px;
 
-  border-radius: 20px;
-
   text-align: center;
+
+  box-shadow:
+    0 10px 40px rgba(0,0,0,0.12);
+
+  h2 {
+    font-size: 32px;
+
+    margin-bottom: 12px;
+  }
+
+  h3 {
+    font-size: 28px;
+
+    margin-bottom: 8px;
+  }
+
+  p {
+    color: #666;
+  }
 }
 
-.winnerAvatar {
-  width: 96px;
-  height: 96px;
+.closeButton {
+  position: absolute;
 
-  margin: 16px auto 0;
+  top: 14px;
+  right: 14px;
 
-  overflow: hidden;
+  width: 36px;
+  height: 36px;
+
+  border: none;
 
   border-radius: 999px;
 
-  img {
-    width: 100%;
-    height: 100%;
+  background: rgba(0,0,0,0.06);
 
-    object-fit: cover;
-  }
+  color: #1d1d1f;
+
+  font-size: 18px;
+
+  cursor: pointer;
 }

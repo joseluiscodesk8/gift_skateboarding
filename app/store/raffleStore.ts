@@ -2,17 +2,16 @@ import { create } from "zustand";
 import { Participant, Winner } from "../types/raffles";
 
 type RaffleStore = {
+  winner: Winner | null;
   maxNumbers: number;
   participants: Participant[];
-  winner: Winner | null;
+  setWinner: (
+  winner: Winner | null
+) => void;
 
   setMaxNumbers: (value: number) => void;
 
-addParticipant: (
-  name: string,
-  numbers: number[],
-  photo?: string
-) => void;
+  addParticipant: (name: string, numbers: number[], photo?: string) => void;
 
   drawWinner: () => void;
 
@@ -26,60 +25,41 @@ export const useRaffleStore = create<RaffleStore>((set, get) => ({
 
   winner: null,
 
+  setWinner: (winner) =>
+  set({ winner }),
+
   setMaxNumbers: (value) => set({ maxNumbers: value }),
 
-  addParticipant: (name, numbers, photo) => {
+  addParticipant: (name: string, numbers: number[], photo?: string) => {
     const participants = get().participants;
+
     const maxNumbers = get().maxNumbers;
 
-    const cleanName = name.trim();
-
-    if (!cleanName) {
-      alert("Debes ingresar un nombre");
-      return;
-    }
-
-    if (!numbers.length) {
-      alert("Debes ingresar al menos un número");
-      return;
-    }
-
-    const invalidNumber = numbers.find(
-      (n) => isNaN(n) || n < 1 || n > maxNumbers
-    );
+    // validar rango
+    const invalidNumber = numbers.find((n: number) => isNaN(n) || n < 1 || n > maxNumbers);
 
     if (invalidNumber) {
-      alert(`El número ${invalidNumber} está fuera del rango permitido`);
+      alert(`Número ${invalidNumber} fuera del rango`);
       return;
     }
 
-    const uniqueNumbers = new Set(numbers);
+    // numeros ya usados
+    const allUsedNumbers = participants.flatMap((p) => p.numbers);
 
-    if (uniqueNumbers.size !== numbers.length) {
-      alert("Hay números repetidos");
-      return;
-    }
-
-    const usedNumbers = participants.flatMap((p) => p.numbers);
-
-    const duplicated = numbers.find((n) => usedNumbers.includes(n));
+    const duplicated = numbers.find((n: number) => allUsedNumbers.includes(n));
 
     if (duplicated) {
       alert(`Número ${duplicated} ya usado`);
       return;
     }
 
-    set({
-      participants: [
-        ...participants,
-        {
-          id: crypto.randomUUID(),
-          name: cleanName,
-          numbers,
-          photo,
-        },
-      ],
-    });
+    const newParticipant: Participant = {
+      id: String(Date.now()) + Math.random().toString(36).slice(2, 9),
+      name,
+      numbers,
+    };
+
+    set({ participants: [...participants, newParticipant] });
   },
 
   drawWinner: () => {
