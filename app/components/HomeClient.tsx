@@ -6,55 +6,40 @@ import RaffleConfig from "../components/RaffleConfig";
 import ParticipantForm from "../components/ParticipantForm";
 import ParticipantList from "../components/ParticipantList";
 import WinnerModal from "../components/WinnerModal";
+import NumberGrid from "../components/NumberGrid";
 
 import { useRaffleStore } from "../store/raffleStore";
 
 import styles from "../styles/index.module.scss";
 
 export default function HomeClient() {
-  const [showForm, setShowForm] =
-    useState(false);
+  const [showForm, setShowForm] = useState(false);
 
-  const drawWinner = useRaffleStore(
-    (s) => s.drawWinner
-  );
+  const drawWinner = useRaffleStore((s) => s.drawWinner);
 
-  const resetRaffle = useRaffleStore(
-    (s) => s.resetRaffle
-  );
+  const resetRaffle = useRaffleStore((s) => s.resetRaffle);
 
   return (
     <main className={styles.home}>
-      <h1 className={styles.title}>
-        Gift Skate Or Die
-      </h1>
+      <h1 className={styles.title}>Gift Skate Or Die</h1>
 
       <RaffleConfig />
+      <NumberGrid />
 
       <button
         className={styles.addButton}
-        onClick={() =>
-          setShowForm(!showForm)
-        }
+        onClick={() => setShowForm(!showForm)}
       >
         +
       </button>
 
       <div className={styles.actions}>
-        <button onClick={drawWinner}>
-          Sortear
-        </button>
+        <button onClick={drawWinner}>Sortear</button>
 
-        <button onClick={resetRaffle}>
-          Reiniciar
-        </button>
+        <button onClick={resetRaffle}>Reiniciar</button>
       </div>
 
-      {showForm && (
-  <ParticipantForm
-    onSaved={() => setShowForm(false)}
-  />
-)}
+      {showForm && <ParticipantForm onSaved={() => setShowForm(false)} />}
 
       <ParticipantList />
 
