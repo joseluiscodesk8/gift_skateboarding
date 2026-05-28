@@ -1,70 +1,82 @@
 "use client";
 
-import { useState } from "react";
+import { useRef } from "react";
 
 import { useRaffleStore } from "../store/raffleStore";
 
 import styles from "../styles/index.module.scss";
 
 export default function ParticipantList() {
-  const participants = useRaffleStore((s) => s.participants);
+  const participants = useRaffleStore(
+    (s) => s.participants
+  );
 
-  const _store = useRaffleStore();
-  const addNumbersToParticipant =
-    (_store as any).addNumbersToParticipant ?? (() => {});
+  const removeParticipant =
+    useRaffleStore(
+      (s) => s.removeParticipant
+    );
 
-  const [openCard, setOpenCard] = useState<string | null>(null);
+  const timerRef = useRef<
+    NodeJS.Timeout | undefined
+  >(undefined);
 
-  const [newNumbers, setNewNumbers] = useState("");
+  const startPress = (
+    participantId: string,
+    participantName: string
+  ) => {
+    timerRef.current = setTimeout(() => {
+      const confirmed = confirm(
+        `¿Eliminar a ${participantName}?`
+      );
 
-  const handleAddNumbers = (participantId: string) => {
-    const parsedNumbers = newNumbers
-      .split(",")
-      .map((n) => Number(n.trim()))
-      .filter((n) => !isNaN(n));
+      if (confirmed) {
+        removeParticipant(participantId);
+      }
+    }, 700);
+  };
 
-    addNumbersToParticipant(participantId, parsedNumbers);
-
-    setNewNumbers("");
-
-    setOpenCard(null);
+  const cancelPress = () => {
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
+    }
   };
 
   return (
     <div className={styles.participantList}>
       {participants.map((participant) => (
-        <div key={participant.id} className={styles.card}>
-          <button
-            className={styles.cardAddButton}
-            onClick={() =>
-              setOpenCard(openCard === participant.id ? null : participant.id)
-            }
-          >
-            +
-          </button>
-
+        <div
+          key={participant.id}
+          className={styles.card}
+          onTouchStart={() =>
+            startPress(
+              participant.id,
+              participant.name
+            )
+          }
+          onTouchEnd={cancelPress}
+          onTouchMove={cancelPress}
+          onMouseDown={() =>
+            startPress(
+              participant.id,
+              participant.name
+            )
+          }
+          onMouseUp={cancelPress}
+          onMouseLeave={cancelPress}
+        >
           <h3>{participant.name}</h3>
 
           <div className={styles.numbers}>
-            {participant.numbers.map((number, index) => (
-              <span key={`${participant.id}-${number}-${index}`}>{number}</span>
-            ))}
+            {participant.numbers.map(
+              (number, index) => (
+                <span
+                  key={`${participant.id}-${number}-${index}`}
+                >
+                  {number}
+                </span>
+              )
+            )}
           </div>
-
-          {openCard === participant.id && (
-            <div className={styles.addNumbersBox}>
-              <input
-                type="text"
-                placeholder="Ej: 10,11"
-                value={newNumbers}
-                onChange={(e) => setNewNumbers(e.target.value)}
-              />
-
-              <button onClick={() => handleAddNumbers(participant.id)}>
-                Agregar
-              </button>
-            </div>
-          )}
         </div>
       ))}
     </div>

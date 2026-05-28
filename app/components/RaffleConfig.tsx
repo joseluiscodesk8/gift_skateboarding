@@ -17,7 +17,7 @@ export default function RaffleConfig() {
 
   const [open, setOpen] = useState(false);
 
-  const options = [100, 200, 600];
+  const options = [600, 200, 100];
 
   const handleSelect = (value: number) => {
     setMaxNumbers(value);

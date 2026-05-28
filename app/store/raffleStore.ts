@@ -1,94 +1,203 @@
 import { create } from "zustand";
-import { Participant, Winner } from "../types/raffles";
+
+import { persist } from "zustand/middleware";
+
+type Participant = {
+  id: string;
+  name: string;
+  numbers: number[];
+};
+
+type Winner = {
+  participantName: string;
+  winningNumber: number;
+};
 
 type RaffleStore = {
-  winner: Winner | null;
   maxNumbers: number;
+
   participants: Participant[];
+
+  winner: Winner | null;
+
   setWinner: (
-  winner: Winner | null
-) => void;
+    winner: Winner | null
+  ) => void;
 
-  setMaxNumbers: (value: number) => void;
+  setMaxNumbers: (
+    value: number
+  ) => void;
 
-  addParticipant: (name: string, numbers: number[], photo?: string) => void;
+  addParticipant: (
+    name: string,
+    numbers: number[]
+  ) => void;
+
+  removeParticipant: (
+    participantId: string
+  ) => void;
 
   drawWinner: () => void;
 
   resetRaffle: () => void;
 };
 
-export const useRaffleStore = create<RaffleStore>((set, get) => ({
-  maxNumbers: 100,
+export const useRaffleStore =
+  create<RaffleStore>()(
+    persist(
+      (set, get) => ({
+        maxNumbers: 100,
 
-  participants: [],
+        participants: [],
 
-  winner: null,
+        winner: null,
 
-  setWinner: (winner) =>
-  set({ winner }),
+        setWinner: (winner) =>
+          set({ winner }),
 
-  setMaxNumbers: (value) => set({ maxNumbers: value }),
+        setMaxNumbers: (value) =>
+          set({ maxNumbers: value }),
 
-  addParticipant: (name: string, numbers: number[], photo?: string) => {
-    const participants = get().participants;
+        addParticipant: (
+          name,
+          numbers
+        ) => {
+          const participants =
+            get().participants;
 
-    const maxNumbers = get().maxNumbers;
+          const maxNumbers =
+            get().maxNumbers;
 
-    // validar rango
-    const invalidNumber = numbers.find((n: number) => isNaN(n) || n < 1 || n > maxNumbers);
+          const cleanName =
+            name.trim();
 
-    if (invalidNumber) {
-      alert(`Número ${invalidNumber} fuera del rango`);
-      return;
-    }
+          if (!cleanName) {
+            alert(
+              "Debes ingresar un nombre"
+            );
 
-    // numeros ya usados
-    const allUsedNumbers = participants.flatMap((p) => p.numbers);
+            return;
+          }
 
-    const duplicated = numbers.find((n: number) => allUsedNumbers.includes(n));
+          if (!numbers.length) {
+            alert(
+              "Debes ingresar al menos un número"
+            );
 
-    if (duplicated) {
-      alert(`Número ${duplicated} ya usado`);
-      return;
-    }
+            return;
+          }
 
-    const newParticipant: Participant = {
-      id: String(Date.now()) + Math.random().toString(36).slice(2, 9),
-      name,
-      numbers,
-    };
+          const invalidNumber =
+            numbers.find(
+              (n) =>
+                isNaN(n) ||
+                n < 1 ||
+                n > maxNumbers
+            );
 
-    set({ participants: [...participants, newParticipant] });
-  },
+          if (invalidNumber) {
+            alert(
+              `El número ${invalidNumber} está fuera del rango`
+            );
 
-  drawWinner: () => {
-    const participants = get().participants;
+            return;
+          }
 
-    const tickets = participants.flatMap((participant) =>
-      participant.numbers.map((number) => ({
-        participantName: participant.name,
-        winningNumber: number,
-        photo: participant.photo,
-      }))
-    );
+          const usedNumbers =
+            participants.flatMap(
+              (p) => p.numbers
+            );
 
-    if (!tickets.length) {
-      alert("No hay participantes");
-      return;
-    }
+          const duplicated =
+            numbers.find((n) =>
+              usedNumbers.includes(n)
+            );
 
-    const randomIndex =
-      crypto.getRandomValues(new Uint32Array(1))[0] % tickets.length;
+          if (duplicated) {
+            alert(
+              `Número ${duplicated} ya usado`
+            );
 
-    set({
-      winner: tickets[randomIndex],
-    });
-  },
+            return;
+          }
 
-  resetRaffle: () =>
-    set({
-      participants: [],
-      winner: null,
-    }),
-}));
+          set({
+            participants: [
+              ...participants,
+              {
+                id: crypto.randomUUID(),
+
+                name: cleanName,
+
+                numbers,
+              },
+            ],
+          });
+        },
+
+        removeParticipant: (
+          participantId
+        ) => {
+          const participants =
+            get().participants;
+
+          set({
+            participants:
+              participants.filter(
+                (participant) =>
+                  participant.id !==
+                  participantId
+              ),
+          });
+        },
+
+        drawWinner: () => {
+          const participants =
+            get().participants;
+
+          const tickets =
+            participants.flatMap(
+              (participant) =>
+                participant.numbers.map(
+                  (number) => ({
+                    participantName:
+                      participant.name,
+
+                    winningNumber:
+                      number,
+                  })
+                )
+            );
+
+          if (!tickets.length) {
+            alert(
+              "No hay participantes"
+            );
+
+            return;
+          }
+
+          const randomIndex =
+            crypto.getRandomValues(
+              new Uint32Array(1)
+            )[0] % tickets.length;
+
+          set({
+            winner:
+              tickets[randomIndex],
+          });
+        },
+
+        resetRaffle: () =>
+          set({
+            participants: [],
+
+            winner: null,
+          }),
+      }),
+
+      {
+        name: "raffle-storage",
+      }
+    )
+  );
