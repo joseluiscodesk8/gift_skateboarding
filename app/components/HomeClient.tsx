@@ -17,7 +17,6 @@ export default function HomeClient() {
 
   const drawWinner = useRaffleStore((s) => s.drawWinner);
 
-  const resetRaffle = useRaffleStore((s) => s.resetRaffle);
 
   return (
     <main className={styles.home}>
@@ -35,8 +34,6 @@ export default function HomeClient() {
 
       <div className={styles.actions}>
         <button onClick={drawWinner}>Sortear</button>
-
-        <button onClick={resetRaffle}>Reiniciar</button>
       </div>
 
       {showForm && <ParticipantForm onSaved={() => setShowForm(false)} />}

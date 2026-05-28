@@ -39,7 +39,6 @@ type RaffleStore = {
 
   drawWinner: () => void;
 
-  resetRaffle: () => void;
 };
 
 export const useRaffleStore =
@@ -187,13 +186,6 @@ export const useRaffleStore =
               tickets[randomIndex],
           });
         },
-
-        resetRaffle: () =>
-          set({
-            participants: [],
-
-            winner: null,
-          }),
       }),
 
       {
