@@ -20,12 +20,24 @@ type RaffleStore = {
 
   winner: Winner | null;
 
+  currentIndex: number;
+
+  isDrawing: boolean;
+
   setWinner: (
     winner: Winner | null
   ) => void;
 
   setMaxNumbers: (
     value: number
+  ) => void;
+
+  setCurrentIndex: (
+    index: number
+  ) => void;
+
+  setIsDrawing: (
+    value: boolean
   ) => void;
 
   addParticipant: (
@@ -38,7 +50,6 @@ type RaffleStore = {
   ) => void;
 
   drawWinner: () => void;
-
 };
 
 export const useRaffleStore =
@@ -51,11 +62,25 @@ export const useRaffleStore =
 
         winner: null,
 
+        currentIndex: 0,
+
+        isDrawing: false,
+
         setWinner: (winner) =>
           set({ winner }),
 
         setMaxNumbers: (value) =>
           set({ maxNumbers: value }),
+
+        setCurrentIndex: (index) =>
+          set({
+            currentIndex: index,
+          }),
+
+        setIsDrawing: (value) =>
+          set({
+            isDrawing: value,
+          }),
 
         addParticipant: (
           name,
@@ -125,9 +150,7 @@ export const useRaffleStore =
               ...participants,
               {
                 id: crypto.randomUUID(),
-
                 name: cleanName,
-
                 numbers,
               },
             ],
@@ -140,13 +163,17 @@ export const useRaffleStore =
           const participants =
             get().participants;
 
+          const filtered =
+            participants.filter(
+              (participant) =>
+                participant.id !==
+                participantId
+            );
+
           set({
-            participants:
-              participants.filter(
-                (participant) =>
-                  participant.id !==
-                  participantId
-              ),
+            participants: filtered,
+
+            currentIndex: 0,
           });
         },
 
